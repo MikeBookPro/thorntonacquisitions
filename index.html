@@ -175,23 +175,57 @@
 
   <!-- Contact -->
   <section class="section" id="contact">
-    <div class="container contact-container">
-      <p class="section-label">Get In Touch</p>
-      <h2>Let's have a conversation.</h2>
-      <p class="section-intro">If you're thinking about selling and want to talk to a serious, straightforward buyer — I'd welcome it. No obligation, no pressure, just a conversation.</p>
-      <div class="contact-details">
-        <a href="mailto:mike@thorntonacquisitions.com" class="contact-item">
-          <span class="contact-label">Email</span>
-          <span class="contact-value">mike@thorntonacquisitions.com</span>
-        </a>
-        <a href="tel:8478125590" class="contact-item">
-          <span class="contact-label">Phone</span>
-          <span class="contact-value">847-812-5590</span>
-        </a>
-        <a href="https://www.linkedin.com/in/mthornt/" target="_blank" rel="noopener" class="contact-item">
-          <span class="contact-label">LinkedIn</span>
-          <span class="contact-value">linkedin.com/in/mthornt</span>
-        </a>
+    <div class="container">
+      <div class="contact-grid">
+
+        <div class="contact-left">
+          <p class="section-label">Get In Touch</p>
+          <h2>Let's have a conversation.</h2>
+          <p class="section-intro" style="margin-bottom: 32px;">If you're thinking about selling and want to talk to a serious, straightforward buyer — I'd welcome it. No obligation, no pressure, just a conversation.</p>
+          <div class="contact-details">
+            <a href="mailto:mike@thorntonacquisitions.com" class="contact-item">
+              <span class="contact-label">Email</span>
+              <span class="contact-value">mike@thorntonacquisitions.com</span>
+            </a>
+            <a href="tel:8478125590" class="contact-item">
+              <span class="contact-label">Phone</span>
+              <span class="contact-value">847-812-5590</span>
+            </a>
+            <a href="https://www.linkedin.com/in/mthornt/" target="_blank" rel="noopener" class="contact-item">
+              <span class="contact-label">LinkedIn</span>
+              <span class="contact-value">linkedin.com/in/mthornt</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="contact-right">
+          <form class="contact-form" id="contact-form" action="https://formspree.io/f/xbdpgjrv" method="POST">
+            <div class="form-group">
+              <label for="cf-name">Your Name</label>
+              <input type="text" id="cf-name" name="name" required placeholder="Jane Smith">
+            </div>
+            <div class="form-group">
+              <label for="cf-email">Email Address</label>
+              <input type="email" id="cf-email" name="email" required placeholder="jane@example.com">
+            </div>
+            <div class="form-group">
+              <label for="cf-phone">Phone <span class="form-optional">(optional)</span></label>
+              <input type="tel" id="cf-phone" name="phone" placeholder="555-123-4567">
+            </div>
+            <div class="form-group">
+              <label for="cf-message">Tell me about your business</label>
+              <textarea id="cf-message" name="message" required rows="5" placeholder="Industry, location, rough size, what you're thinking about…"></textarea>
+            </div>
+            <button type="submit" class="form-submit">Send Message</button>
+            <div class="form-success" id="form-success">
+              <p>Thank you — I'll be in touch shortly.</p>
+            </div>
+            <div class="form-error" id="form-error">
+              <p>Something went wrong. Please try emailing me directly at mike@thorntonacquisitions.com.</p>
+            </div>
+          </form>
+        </div>
+
       </div>
     </div>
   </section>
@@ -209,6 +243,41 @@
     window.addEventListener('scroll', () => {
       nav.classList.toggle('nav-scrolled', window.scrollY > 20);
     });
+
+    // Contact form AJAX submission
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const btn = contactForm.querySelector('.form-submit');
+        const success = document.getElementById('form-success');
+        const error = document.getElementById('form-error');
+
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        success.style.display = 'none';
+        error.style.display = 'none';
+
+        try {
+          const res = await fetch(contactForm.action, {
+            method: 'POST',
+            body: new FormData(contactForm),
+            headers: { 'Accept': 'application/json' }
+          });
+          if (res.ok) {
+            success.style.display = 'block';
+            contactForm.reset();
+            btn.textContent = 'Sent';
+          } else {
+            throw new Error();
+          }
+        } catch (_) {
+          error.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Send Message';
+        }
+      });
+    }
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
